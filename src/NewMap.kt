@@ -1,18 +1,38 @@
-class NewMap {
-    val myMap: MutableMap<String, String> = mutableMapOf()
+import java.io.*
 
-    
+class NewMap {
+    class FoundMes(_key: String, _pos: Int, _isKey: Boolean) {
+        val key = _key
+        val pos = _pos
+        val isKey = _isKey
+    }
+
+    private val myMap: MutableMap<String, String> = mutableMapOf()
+
     init {
         load()
     }
 
-    fun load(filename: String = "data.json") {
-        //TODO
-
+    private fun load(filename: String = "data.json") {
+        if (persistentStorage) {
+            val file = File(filename)
+            if (file.exists()) {
+                val br = BufferedReader(InputStreamReader(file.inputStream()))
+                //TODO: add reading by klaxon
+            }
+        }
     }
 
     fun write(filename: String = "data.json") {
-        //TODO
+        if (persistentStorage) {
+            val file = File(filename)
+            while (!file.exists())
+                if (!file.createNewFile())
+                    println("Error creating a new file")
+
+            val bw = BufferedWriter(OutputStreamWriter(file.outputStream()))
+            //TODO: add writing by klaxon
+        }
     }
 
     fun set(key: String, value: String) {
@@ -29,8 +49,13 @@ class NewMap {
 
     fun delValue(value: String) : ArrayList<String>? {
         if (myMap.containsValue(value)) {
-            //TODO: do
-            return null //TODO: return deleted key
+            val delKeys = ArrayList <String>()
+            for (key in myMap.keys)
+                if (myMap[key] == value) {
+                    myMap.remove(key)
+                    delKeys.add(key)
+                }
+            return delKeys
         }
         return null
     }
@@ -51,14 +76,13 @@ class NewMap {
         return myMap.containsValue(value)
     }
 
-    fun find(part: String) : ArrayList<Pair<String, Pair<Int, Boolean>>> { // Возвращает ключ, индекс данной части в ключе/значении и ключ ли это
-        //TODO: сделать класс вместо пары строки и пары числа с bool
-        val res = ArrayList<Pair<String, Pair<Int, Boolean>>>()
+    fun find(part: String) : ArrayList<FoundMes> { // Возвращает ключ, индекс данной части в ключе/значении и ключ ли это
+        val res = ArrayList<FoundMes>()
         for (key in myMap.keys) {
             if (key.contains(part))
-                res.add(key to (key.indexOf(part) to true))
+                res.add(FoundMes(key, key.indexOf(part), true))
             else if (myMap[key]!!.contains(part))
-                res.add(key to (myMap[key]!!.indexOf(part) to false))
+                res.add(FoundMes(key, myMap[key]!!.indexOf(part), false))
         }
         return res
     }
@@ -66,7 +90,6 @@ class NewMap {
     fun isEmpty() : Boolean {
         return myMap.isEmpty()
     }
-
 
     fun printPair(key: String) : Boolean {
         if (contains(key)) {

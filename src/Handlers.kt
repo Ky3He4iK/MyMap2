@@ -1,5 +1,5 @@
 class Handlers (mMap: NewMap){
-    val myMap = mMap
+    private val myMap = mMap
 
     fun isAdd(input: String) : Boolean {
         return input.startsWith("add")
@@ -24,10 +24,14 @@ class Handlers (mMap: NewMap){
         return input == "help"
     }
 
-    fun onHelp(input: String?) {
+    fun onHelp() {
         for (com in help) {
-            printBold(com.first)
-            println(com.second)
+            if (com.first.isEmpty())
+                println()
+            else {
+                printBold(com.first)
+                println(" - ${com.second}")
+            }
         }
     }
 
@@ -53,7 +57,7 @@ class Handlers (mMap: NewMap){
         return input == "stop" || input == "exit"
     }
 
-    fun onStop(input: String) {
+    fun onStop() {
         myMap.write()
         println("Goodbye...")
     }
@@ -62,7 +66,7 @@ class Handlers (mMap: NewMap){
         return input == "clear"
     }
 
-    fun onClear(input: String) {
+    fun onClear() {
         myMap.clear()
         println("Cleared!")
     }
@@ -71,12 +75,12 @@ class Handlers (mMap: NewMap){
         return input == "list"
     }
 
-    fun onList(input: String) {
+    fun onList() {
         if (!myMap.isEmpty())
-            for ((key, value) in myMap.myMap) {
+            for ((key, value) in myMap.getMap()) {
                 print("\"")
                 printBold(key)
-                println("\" : \"" + value + "\"")
+                println("\" : \"$value\"")
             }
         else
             println("I haven't any data yet :(")
@@ -142,23 +146,23 @@ class Handlers (mMap: NewMap){
             val part = input.substring("find ".length)
             val found = myMap.find(part)
             if (found.isEmpty())
-                println("I can't found keys or values with " + part)
+                println("I can't found keys or values with $part")
             else {
                 for (foundWrite in found) {
                     print("\"")
-                    if (foundWrite.second.second) {
-                        print(foundWrite.first.substring(0, foundWrite.second.first))
+                    if (foundWrite.isKey) {
+                        print(foundWrite.key.substring(0, foundWrite.pos))
                         printBold(part)
-                        print(foundWrite.first.substring(foundWrite.second.first + part.length))
+                        print(foundWrite.key.substring(foundWrite.pos + part.length))
                     } else
-                        print(foundWrite.first)
+                        print(foundWrite.key)
                     print("\" : \"")
-                    if (foundWrite.second.second)
-                        print(myMap.get(foundWrite.first))
+                    if (foundWrite.isKey)
+                        print(myMap.get(foundWrite.key))
                     else {
-                        print(myMap.get(foundWrite.first)!!.substring(0, foundWrite.second.first))
+                        print(myMap.get(foundWrite.key)!!.substring(0, foundWrite.pos))
                         printBold(part)
-                        print(myMap.get(foundWrite.first)!!.substring(foundWrite.second.first + part.length))
+                        print(myMap.get(foundWrite.key)!!.substring(foundWrite.pos + part.length))
                     }
                     println("\"")
                 }
