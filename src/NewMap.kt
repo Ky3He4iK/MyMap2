@@ -39,29 +39,22 @@ class NewMap {
         myMap[key] = value
     }
 
-    fun del(key: String) : Boolean {
-        if (myMap.containsKey(key)) {
-            myMap.remove(key)
-            return true
-        }
-        return false
+    fun del(key: String) {
+        myMap.remove(key)
     }
 
-    fun delValue(value: String) : ArrayList<String>? {
-        if (myMap.containsValue(value)) {
-            val delKeys = ArrayList <String>()
-            for (key in myMap.keys)
-                if (myMap[key] == value) {
-                    myMap.remove(key)
-                    delKeys.add(key)
-                }
-            return delKeys
-        }
-        return null
+    fun delValue(value: String) : ArrayList<String> {
+        val delKeys = ArrayList <String>()
+        for (key in getKeys())
+            if (get(key) == value) {
+                del(key)
+                delKeys.add(key)
+            }
+        return delKeys
     }
 
     fun get(key: String) : String? {
-        return myMap.getOrDefault(key, null)
+        return myMap[key]
     }
 
     fun clear() {
@@ -78,11 +71,11 @@ class NewMap {
 
     fun find(part: String) : ArrayList<FoundMes> { // Возвращает ключ, индекс данной части в ключе/значении и ключ ли это
         val res = ArrayList<FoundMes>()
-        for (key in myMap.keys) {
+        for (key in getKeys()) {
             if (key.contains(part))
                 res.add(FoundMes(key, key.indexOf(part), true))
-            else if (myMap[key]!!.contains(part))
-                res.add(FoundMes(key, myMap[key]!!.indexOf(part), false))
+            else if (get(key)!!.contains(part))
+                res.add(FoundMes(key, get(key)!!.indexOf(part), false))
         }
         return res
     }
@@ -91,17 +84,11 @@ class NewMap {
         return myMap.isEmpty()
     }
 
-    fun printPair(key: String) : Boolean {
-        if (contains(key)) {
-            print("\"")
-            printBold(key)
-            print("\" : \"" + get(key) + "\"")
-            return true
-        }
-        return false
+    fun printPair(key: String) {
+        print("\"${printBold(key)}\" : \"${get(key)}\"")
     }
 
-    fun getMap() : MutableMap <String, String> {
-        return myMap
+    fun getKeys() : MutableSet <String> {
+        return myMap.keys
     }
 }
