@@ -1,6 +1,7 @@
 class Handlers(mMap: NewMap) {
     private val myMap = mMap
 
+    // Проверка на соответствие той или иной комманде
     fun isAdd(command: String): Boolean {
         return command == "add"
     }
@@ -29,6 +30,10 @@ class Handlers(mMap: NewMap) {
         return command == "list"
     }
 
+    fun isRegex(command: String) : Boolean {
+        return command == "find_regex"
+    }
+
     fun isSet(command: String): Boolean {
         return command == "set"
     }
@@ -46,17 +51,20 @@ class Handlers(mMap: NewMap) {
     }
 
 
+    // Выполнение комманд
     fun onAdd(data: String?) {
-        if (data != null) {
-            if (myMap.contains(data))
-                println("This key already exists!")
-            else {
-                print("And now, value for this key: ")
-                myMap.set(data, readLine()!!)
-                println("Added successfully")
-            }
-        } else
-            println("usage: `add <key>`")
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the key: ")
+            mData = readLine()!!
+        }
+        if (myMap.contains(mData))
+            println("This key already exists!")
+        else {
+            print("And now, value for this key: ")
+            myMap.set(mData, readLine()!!)
+            println("Added successfully")
+        }
     }
 
     fun onClear() {
@@ -65,53 +73,58 @@ class Handlers(mMap: NewMap) {
     }
 
     fun onDel(data: String?) {
-        if (data != null) {
-            if (myMap.contains(data)) {
-                myMap.del(data)
-                println("Deleted successfully")
-            } else
-                println("I haven't this key!")
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the key: ")
+            mData = readLine()!!
+        }
+        if (myMap.contains(mData)) {
+            myMap.del(mData)
+            println("Deleted successfully")
         } else
-            print("usage: `del <key>`")
+            println("I haven't this key!")
     }
 
     fun onDelByVal(data: String?) {
-        if (data != null) {
-            if (myMap.containsValue(data)) {
-                val delKeys = myMap.delValue(data)
-                println("Deleted successfully with keys:")
-                for (key in delKeys)
-                    println("\"${printBold(key)}\"")
-            } else
-                println("I haven't key with this value!")
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the value: ")
+            mData = readLine()!!
+        }
+        if (myMap.containsValue(mData)) {
+            val delKeys = myMap.delValue(mData)
+            println("Deleted successfully with keys:")
+            for (key in delKeys)
+                println("\"${printBold(key)}\"")
         } else
-            print("usage: `del_v <value>`")
+            println("I haven't key with this value!")
     }
 
     fun onFind(data: String?) {
-        if (data != null) {
-            val found = myMap.find(data)
-            if (found.isEmpty())
-                println("I can't found keys or values with $data")
-            else
-                for (foundWrite in found) {  // У меня огромное желание запихнуть тело цикла в один println(...)
-                    // Правда мне надо показать уменя писать качественный код, а не код с минимальным количеством строчек
-                    print("\"")
-                    if (foundWrite.isKey)
-                        print(foundWrite.key.substring(0, foundWrite.pos) + printBold(data) +
-                                foundWrite.key.substring(foundWrite.pos + data.length))
-                    else
-                        print(foundWrite.key)
-                    print("\" : \"")
-                    if (foundWrite.isKey)
-                        print(myMap.get(foundWrite.key))
-                    else
-                        print(myMap.get(foundWrite.key)!!.substring(0, foundWrite.pos) + printBold(data) +
-                                myMap.get(foundWrite.key)!!.substring(foundWrite.pos + data.length))
-                    println("\"")
-                }
-        } else
-            println("usage: `find <part>`")
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the part: ")
+            mData = readLine()!!
+        }
+        val found = myMap.find(mData)
+        if (found.isEmpty())
+            println("I can't found keys or values with $mData")
+        else
+            for (foundWrite in found) {
+                print("\"")
+                if (foundWrite.isKey)
+                    print(foundWrite.key.substring(0, foundWrite.pos) + printBold(mData) +
+                            foundWrite.key.substring(foundWrite.pos + mData.length))
+                else
+                    print(foundWrite.key)
+                print("\" : \"")
+                if (foundWrite.isKey)
+                    print(myMap.get(foundWrite.key))
+                else
+                    print(myMap.get(foundWrite.key)!!.substring(0, foundWrite.pos) + printBold(mData) +
+                            myMap.get(foundWrite.key)!!.substring(foundWrite.pos + mData.length))
+                println("\"")
+            }
     }
 
     fun onHelp() {
@@ -130,26 +143,44 @@ class Handlers(mMap: NewMap) {
             println("I haven't any data yet :(")
     }
 
-    fun onSet(data: String?) {
-        if (data != null)
-            if (myMap.contains(data)) {
-                print("And now, value for this key: ")
-                myMap.set(data, readLine()!!)
-                println("Set successfully")
-            } else
-                println("I haven't this key!")
+    fun onRegex(data: String?) {
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the regex: ")
+            mData = readLine()!!
+        }
+        val found = myMap.findRegex(mData.toRegex())
+        if (found.isEmpty())
+            println("I can't found keys or values that matches $mData")
         else
-            println("Usage: `set <key>`")
+            for (foundString in found)
+                println("\"${printBold(foundString)}\" : \"${myMap.get(foundString)}\"")
+    }
+
+    fun onSet(data: String?) {
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the key: ")
+            mData = readLine()!!
+        }
+        if (myMap.contains(mData)) {
+            print("And now, value for this key: ")
+            myMap.set(mData, readLine()!!)
+            println("Set successfully")
+        } else
+            println("I haven't this key!")
     }
 
     fun onShow(data: String?) {
-        if (data != null)
-            if (myMap.contains(data))
-                println("\"${printBold(data)}\" - \"" + myMap.get(data) + "\"")
-            else
-                println("I haven't  this key!")
+        var mData = data
+        if (mData == null) {
+            print("Please, enter the key: ")
+            mData = readLine()!!
+        }
+        if (myMap.contains(mData))
+            println("\"${printBold(mData)}\" - \"" + myMap.get(mData) + "\"")
         else
-            println("Usage: `show <key>`")
+            println("I haven't  this key!")
     }
 
     fun onStop() {

@@ -1,22 +1,22 @@
-const val persistentStorage = false
+const val persistentStorage = true
 
 val help = listOf(
-        "help" to "show help message", // O(1)
-        "stop" to "exit program", // O(1)
-        "clear" to "erase all keys", // O(1)
-        "list" to "show all keys and values", // O(n)
+        "help" to "show help message",
+        "stop" to "exit program",
+        "clear" to "erase all keys",
+        "list" to "show all keys and values",
         "" to "", // Костыльный разделитель
-        "add <key>" to "add new <key>", // O(log n)
-        "set <key>" to "set <value> to <key>", // O(log n)
-        "del <key>" to "delete <key>", // O(log n)
-        "del_v <value>" to "delete keys with value <value>", // O(n)
-        "show <key>" to "show value for <key>", // O(log n)
-        "find <part>" to "show all keys and values that contains <part>", // O(log n)
-        "" to "", // O(0)
-        "<key> = <value>" to "see `myMap.set <key>`", // O(log n)
-        "<key>" to "see `show <key>`" // O(log n)
+        "add <key>" to "add new <key>",
+        "set <key>" to "set <value> to <key>",
+        "del <key>" to "delete <key>",
+        "del_v <value>" to "delete keys with value <value>",
+        "show <key>" to "show value for <key>",
+        "find <part>" to "show all keys and values that contains <part>",
+        "find_regex <regex>" to "show all keys and values that match <regex>",
+        "" to "",
+        "<key> = <value>" to "see `myMap.set <key>`",
+        "<key>" to "see `show <key>`"
 ) // Список все хоступных комманд
-//TODO: add find_regex
 
 fun printBold(text: String): String { // Специальная функци чтоб писать жирным
     val esc = "\u001B"
@@ -54,6 +54,8 @@ fun main(args: Array<String>) {
                 handlers.onHelp()
             else if (handlers.isList(command))
                 handlers.onList()
+            else if (handlers.isRegex(command))
+                handlers.onRegex(data)
             else if (handlers.isSet(command))
                 handlers.onSet(data)
             else if (handlers.isShow(command))

@@ -17,8 +17,9 @@ class NewMap { // Оболочка для map
         if (persistentStorage) {
             val file = File(filename)
             if (file.exists()) {
-                val br = BufferedReader(InputStreamReader(file.inputStream()))
-                //TODO: add reading by klaxon
+                val inputArray = file.bufferedReader().use { it.readText() }.split("\n")
+                for (i in 0 until (inputArray.size - inputArray.size % 2) step 2)
+                    set(inputArray[i], inputArray[i + 1])
             }
         }
     }
@@ -29,9 +30,10 @@ class NewMap { // Оболочка для map
             while (!file.exists())
                 if (!file.createNewFile())
                     println("Error creating a new file")
-
-            val bw = BufferedWriter(OutputStreamWriter(file.outputStream()))
-            //TODO: add writing by klaxon
+            val bufferedWriter = file.bufferedWriter()
+            for (key in getKeys())
+                bufferedWriter.write("$key\n${get(key)}")
+            bufferedWriter.close()
         }
     }
 
@@ -77,6 +79,14 @@ class NewMap { // Оболочка для map
                 res.add(FoundMes(key, key.indexOf(part), true))
             else if (get(key)!!.contains(part))
                 res.add(FoundMes(key, get(key)!!.indexOf(part), false))
+        return res
+    }
+
+    fun findRegex(regex: Regex): ArrayList<String> { // Возвращает только ключи
+        val res = ArrayList<String>()
+        for (key in getKeys())
+            if (key.matches(regex) || get(key)!!.matches(regex))
+                res.add(key)
         return res
     }
 
