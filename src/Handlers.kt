@@ -1,47 +1,47 @@
-class Handlers (mMap: NewMap){
+class Handlers(mMap: NewMap) {
     private val myMap = mMap
 
-    fun isAdd(command: String) : Boolean {
+    fun isAdd(command: String): Boolean {
         return command == "add"
     }
 
-    fun isClear(command: String) : Boolean {
+    fun isClear(command: String): Boolean {
         return command == "clear"
     }
 
-    fun isDel(command: String) : Boolean {
-        return command =="del"
+    fun isDel(command: String): Boolean {
+        return command == "del"
     }
 
-    fun isDelByVal(command: String) : Boolean {
+    fun isDelByVal(command: String): Boolean {
         return command == "del_v"
     }
 
-    fun isFind(command: String) : Boolean {
+    fun isFind(command: String): Boolean {
         return command == "find"
     }
 
-    fun isHelp(command: String) : Boolean {
+    fun isHelp(command: String): Boolean {
         return command == "help"
     }
 
-    fun isList(command: String) : Boolean {
+    fun isList(command: String): Boolean {
         return command == "list"
     }
 
-    fun isSet(command: String) : Boolean {
+    fun isSet(command: String): Boolean {
         return command == "set"
     }
 
-    fun isShow(command: String) : Boolean {
-        return  command == "show"
+    fun isShow(command: String): Boolean {
+        return command == "show"
     }
 
-    fun isStop(command: String) : Boolean {
+    fun isStop(command: String): Boolean {
         return command == "stop" || command == "exit"
     }
 
-    fun isShowShort(input: String) : Boolean {
+    fun isShowShort(input: String): Boolean {
         return input.contains(" = ") && !myMap.contains(input)
     }
 

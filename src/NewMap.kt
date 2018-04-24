@@ -1,7 +1,7 @@
 import java.io.*
 
-class NewMap {
-    class FoundMes(_key: String, _pos: Int, _isKey: Boolean) {
+class NewMap { // Оболочка для map
+    class FoundMes(_key: String, _pos: Int, _isKey: Boolean) { // Вспомогательный класс для поиска
         val key = _key
         val pos = _pos
         val isKey = _isKey
@@ -43,9 +43,10 @@ class NewMap {
         myMap.remove(key)
     }
 
-    fun delValue(value: String) : ArrayList<String> {
-        val delKeys = ArrayList <String>()
-        for (key in getKeys())
+    fun delValue(value: String): ArrayList<String> {
+        val delKeys = ArrayList<String>()
+        val keys = getKeys().toTypedArray()
+        for (key in keys)
             if (get(key) == value) {
                 del(key)
                 delKeys.add(key)
@@ -53,7 +54,7 @@ class NewMap {
         return delKeys
     }
 
-    fun get(key: String) : String? {
+    fun get(key: String): String? {
         return myMap[key]
     }
 
@@ -61,26 +62,25 @@ class NewMap {
         myMap.clear()
     }
 
-    fun contains(key: String) : Boolean {
+    fun contains(key: String): Boolean {
         return myMap.containsKey(key)
     }
 
-    fun containsValue(value: String) : Boolean {
+    fun containsValue(value: String): Boolean {
         return myMap.containsValue(value)
     }
 
-    fun find(part: String) : ArrayList<FoundMes> { // Возвращает ключ, индекс данной части в ключе/значении и ключ ли это
+    fun find(part: String): ArrayList<FoundMes> { // Возвращает ключ, индекс данной части в ключе/значении и ключ ли это
         val res = ArrayList<FoundMes>()
-        for (key in getKeys()) {
+        for (key in getKeys())
             if (key.contains(part))
                 res.add(FoundMes(key, key.indexOf(part), true))
             else if (get(key)!!.contains(part))
                 res.add(FoundMes(key, get(key)!!.indexOf(part), false))
-        }
         return res
     }
 
-    fun isEmpty() : Boolean {
+    fun isEmpty(): Boolean {
         return myMap.isEmpty()
     }
 
@@ -88,7 +88,7 @@ class NewMap {
         print("\"${printBold(key)}\" : \"${get(key)}\"")
     }
 
-    fun getKeys() : MutableSet <String> {
+    fun getKeys(): MutableSet<String> {
         return myMap.keys
     }
 }

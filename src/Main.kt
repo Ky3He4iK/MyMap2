@@ -5,7 +5,7 @@ val help = listOf(
         "help" to "show help message", // O(1)
         "stop" to "exit program", // O(1)
         "clear" to "erase all keys", // O(1)
-        "list"  to "show all keys and values", // O(n)
+        "list" to "show all keys and values", // O(n)
         "" to "", // Костыльный разделитель
         "add <key>" to "add new <key>", // O(log n)
         "set <key>" to "set <value> to <key>", // O(log n)
@@ -19,14 +19,14 @@ val help = listOf(
 ) // Список все хоступных комманд
 //TODO: add find_regex
 
-fun printBold(text: String) : String { // Специальная функци чтоб писать жирным
+fun printBold(text: String): String { // Специальная функци чтоб писать жирным
     val esc = "\u001B"
     val bold = "$esc[1"
     val normal = "$esc[0"
     val colorWhite = ";37m" // Различные escape-последовательности для форматирования вывода
-    print("$bold$colorWhite$text")
-    print("$normal$colorWhite${""}") // Вернуться к обычному выводу текста
-    return "" // Для возможности встраивания в print. Вывод становится в 1 строчку в большинстве случаев
+    val boldText = "$bold$colorWhite$text"
+    val normalText = "$normal$colorWhite${""}" // Возвращаемся к обычной толщине
+    return boldText + normalText // Для возможности встраивания в print. Вывод становится в 1 строчку в большинстве случаев
 }
 
 
@@ -60,12 +60,12 @@ fun main(args: Array<String>) {
                 handlers.onSet(data)
             else if (handlers.isShow(command))
                 handlers.onShow(data)
-            else if (handlers.isShowShort(input))
-                handlers.onShowShort(input)
             else if (handlers.isStop(command)) {
                 handlers.onStop()
                 break
-            } else
+            } else if (handlers.isShowShort(input))
+                handlers.onShowShort(input)
+            else
                 handlers.default(input)
         } catch (e: InterruptedException) {
             println()
