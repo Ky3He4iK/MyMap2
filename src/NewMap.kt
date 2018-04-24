@@ -88,7 +88,7 @@ class NewMap { // Оболочка для map
         print("\"${printBold(key)}\" : \"${get(key)}\"")
     }
 
-    fun getKeys(): MutableSet<String> {
+    fun getKeys(): Set<String> {
         return myMap.keys
     }
 }

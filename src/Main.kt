@@ -1,6 +1,5 @@
 const val persistentStorage = false
 
-
 val help = listOf(
         "help" to "show help message", // O(1)
         "stop" to "exit program", // O(1)
@@ -37,7 +36,6 @@ fun main(args: Array<String>) {
     while (true) {
         print("\nYour command: ")
         val input = readLine()!!
-
         try {
             val spacePos = input.indexOf(" ")
             val command: String = (if (spacePos == -1) input else input.substring(0, spacePos)).toLowerCase()
