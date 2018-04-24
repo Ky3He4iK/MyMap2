@@ -30,7 +30,7 @@ class Handlers(mMap: NewMap) {
         return command == "list"
     }
 
-    fun isRegex(command: String) : Boolean {
+    fun isRegex(command: String): Boolean {
         return command == "find_regex"
     }
 

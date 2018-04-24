@@ -14,27 +14,23 @@ class NewMap { // Оболочка для map
     }
 
     private fun load(filename: String = "data.json") {
-        if (persistentStorage) {
-            val file = File(filename)
-            if (file.exists()) {
-                val inputArray = file.bufferedReader().use { it.readText() }.split("\n")
-                for (i in 0 until (inputArray.size - inputArray.size % 2) step 2)
-                    set(inputArray[i], inputArray[i + 1])
-            }
+        val file = File(filename)
+        if (file.exists()) {
+            val inputArray = file.bufferedReader().use { it.readText() }.split("\n")
+            for (i in 0 until (inputArray.size - inputArray.size % 2) step 2)
+                set(inputArray[i], inputArray[i + 1])
         }
     }
 
     fun write(filename: String = "data.json") {
-        if (persistentStorage) {
-            val file = File(filename)
-            while (!file.exists())
-                if (!file.createNewFile())
-                    println("Error creating a new file")
-            val bufferedWriter = file.bufferedWriter()
-            for (key in getKeys())
-                bufferedWriter.write("$key\n${get(key)}")
-            bufferedWriter.close()
-        }
+        val file = File(filename)
+        while (!file.exists())
+            if (!file.createNewFile())
+                println("Error creating a new file")
+        val bufferedWriter = file.bufferedWriter()
+        for (key in getKeys())
+            bufferedWriter.write("$key\n${get(key)}")
+        bufferedWriter.close()
     }
 
     fun set(key: String, value: String) {

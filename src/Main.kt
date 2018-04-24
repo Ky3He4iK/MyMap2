@@ -1,5 +1,3 @@
-const val persistentStorage = true
-
 val help = listOf(
         "help" to "show help message",
         "stop" to "exit program",
