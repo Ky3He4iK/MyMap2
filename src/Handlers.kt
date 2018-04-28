@@ -30,6 +30,10 @@ class Handlers(mMap: NewMap) {
         return command == "list"
     }
 
+    fun isLoad(command: String): Boolean {
+        return command == "load"
+    }
+
     fun isRegex(command: String): Boolean {
         return command == "find_regex"
     }
@@ -50,6 +54,9 @@ class Handlers(mMap: NewMap) {
         return input.contains(" = ") && !myMap.contains(input)
     }
 
+    fun isWrite(command: String): Boolean {
+        return command == "stop"
+    }
 
     // Выполнение комманд
     fun onAdd(data: String?) {
@@ -95,7 +102,7 @@ class Handlers(mMap: NewMap) {
             val delKeys = myMap.delValue(mData)
             println("Deleted successfully with keys:")
             for (key in delKeys)
-                println("\"${printBold(key)}\"")
+                println("\"${toBoldString(key)}\"")
         } else
             println("I haven't key with this value!")
     }
@@ -113,7 +120,7 @@ class Handlers(mMap: NewMap) {
             for (foundWrite in found) {
                 print("\"")
                 if (foundWrite.isKey)
-                    print(foundWrite.key.substring(0, foundWrite.pos) + printBold(mData) +
+                    print(foundWrite.key.substring(0, foundWrite.pos) + toBoldString(mData) +
                             foundWrite.key.substring(foundWrite.pos + mData.length))
                 else
                     print(foundWrite.key)
@@ -121,7 +128,7 @@ class Handlers(mMap: NewMap) {
                 if (foundWrite.isKey)
                     print(myMap.get(foundWrite.key))
                 else
-                    print(myMap.get(foundWrite.key)!!.substring(0, foundWrite.pos) + printBold(mData) +
+                    print(myMap.get(foundWrite.key)!!.substring(0, foundWrite.pos) + toBoldString(mData) +
                             myMap.get(foundWrite.key)!!.substring(foundWrite.pos + mData.length))
                 println("\"")
             }
@@ -132,7 +139,7 @@ class Handlers(mMap: NewMap) {
             if (com.first.isEmpty())
                 println()
             else
-                println("${printBold(com.first)} - ${com.second}")
+                println("${toBoldString(com.first)} - ${com.second}")
     }
 
     fun onList() {
@@ -141,6 +148,30 @@ class Handlers(mMap: NewMap) {
                 onShow(key)
         else
             println("I haven't any data yet :(")
+    }
+
+    fun onLoad(data: String?) {
+        if (!myMap.isEmpty())
+            while (true) {
+                print("I have a data that will be erased, continue? (y/n)")
+                val input = readLine()!!
+                if (input == "y" || input == "yes")
+                    break
+                else if (input == "n" || input == "no")
+                    return
+                else
+                    print("Please, enter \"yes\" or \"no\"")
+            }
+        var mData = data
+        if (mData == null) {
+            print("Please, enter filename (empty line for \"data.txt\"): ")
+            mData = readLine()!!
+        }
+        val res = if (mData.isEmpty()) myMap.load() else myMap.load(mData)
+        if (res)
+            println("Loaded successfully!")
+        else
+            println("Seems like this file doesn't exists. Operation canceled")
     }
 
     fun onRegex(data: String?) {
@@ -154,7 +185,7 @@ class Handlers(mMap: NewMap) {
             println("I can't found keys or values that matches $mData")
         else
             for (foundString in found)
-                println("\"${printBold(foundString)}\" : \"${myMap.get(foundString)}\"")
+                println("\"${toBoldString(foundString)}\" : \"${myMap.get(foundString)}\"")
     }
 
     fun onSet(data: String?) {
@@ -178,13 +209,33 @@ class Handlers(mMap: NewMap) {
             mData = readLine()!!
         }
         if (myMap.contains(mData))
-            println("\"${printBold(mData)}\" - \"" + myMap.get(mData) + "\"")
+            println("\"${toBoldString(mData)}\" - \"" + myMap.get(mData) + "\"")
         else
             println("I haven't  this key!")
     }
 
     fun onStop() {
-        myMap.write()
+        while (true) {
+            print("Seems like I have some data. Write it to disk? (y/n)")
+            val input = readLine()!!
+            if (input == "y" || input == "yes")
+                break
+            else if (input == "n" || input == "no") {
+                println("Goodbye...")
+                return
+            } else
+                print("Please, enter \"yes\" or \"no\"")
+        }
+        var mData: String? = null
+        if (mData == null) {
+            print("Please, enter filename (empty line for \"data.txt\"): ")
+            mData = readLine()!!
+        }
+        if (mData.isEmpty())
+            myMap.write()
+        else
+            myMap.write(mData)
+        //myMap.write()
         println("Goodbye...")
     }
 
@@ -199,11 +250,22 @@ class Handlers(mMap: NewMap) {
             println("I haven't this key")
     }
 
+    fun onWrite(data: String?) {
+        var mData = data
+        if (mData == null) {
+            print("Please, enter filename (empty line for \"data.txt\"): ")
+            mData = readLine()!!
+        }
+
+        myMap.write(mData)
+        println("Written successfully!")
+    }
+
 
     fun default(input: String) {
         if (myMap.contains(input))
             myMap.printPair(input)
         else
-            println("I don't know this command or key\n${printBold("help")} for list of available details")
+            println("I don't know this command or key\n${toBoldString("help")} for list of available details")
     }
 }

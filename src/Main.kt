@@ -3,6 +3,8 @@ val help = listOf(
         "stop" to "exit program",
         "clear" to "erase all keys",
         "list" to "show all keys and values",
+        "load" to "load keys and values from file",
+        "write" to "write keys and values to file",
         "" to "", // Костыльный разделитель
         "add <key>" to "add new <key>",
         "set <key>" to "set <value> to <key>",
@@ -12,11 +14,11 @@ val help = listOf(
         "find <part>" to "show all keys and values that contains <part>",
         "find_regex <regex>" to "show all keys and values that match <regex>",
         "" to "",
-        "<key> = <value>" to "see `myMap.set <key>`",
-        "<key>" to "see `show <key>`"
+        "<key> = <value>" to "see \"set <key>\"",
+        "<key>" to "see \"show <key>\""
 ) // Список все хоступных комманд
 
-fun printBold(text: String): String { // Специальная функци чтоб писать жирным
+fun toBoldString(text: String): String { // Специальная функци чтоб писать жирным
     val esc = "\u001B"
     val bold = "$esc[1"
     val normal = "$esc[0"
@@ -52,6 +54,8 @@ fun main(args: Array<String>) {
                 handlers.onHelp()
             else if (handlers.isList(command))
                 handlers.onList()
+            else if (handlers.isLoad(command))
+                handlers.onLoad(data)
             else if (handlers.isRegex(command))
                 handlers.onRegex(data)
             else if (handlers.isSet(command))
@@ -61,7 +65,9 @@ fun main(args: Array<String>) {
             else if (handlers.isStop(command)) {
                 handlers.onStop()
                 break
-            } else if (handlers.isShowShort(input))
+            } else if (handlers.isWrite(command))
+                handlers.onWrite(data)
+            else if (handlers.isShowShort(input))
                 handlers.onShowShort(input)
             else
                 handlers.default(input)

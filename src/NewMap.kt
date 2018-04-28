@@ -9,20 +9,18 @@ class NewMap { // Оболочка для map
 
     private val myMap: MutableMap<String, String> = mutableMapOf()
 
-    init {
-        load()
-    }
-
-    private fun load(filename: String = "data.json") {
+    fun load(filename: String = "data.txt"): Boolean {
         val file = File(filename)
         if (file.exists()) {
             val inputArray = file.bufferedReader().use { it.readText() }.split("\n")
             for (i in 0 until (inputArray.size - inputArray.size % 2) step 2)
                 set(inputArray[i], inputArray[i + 1])
+            return true
         }
+        return false
     }
 
-    fun write(filename: String = "data.json") {
+    fun write(filename: String = "data.txt") {
         val file = File(filename)
         while (!file.exists())
             if (!file.createNewFile())
@@ -91,7 +89,7 @@ class NewMap { // Оболочка для map
     }
 
     fun printPair(key: String) {
-        print("\"${printBold(key)}\" : \"${get(key)}\"")
+        print("\"${toBoldString(key)}\" : \"${get(key)}\"")
     }
 
     fun getKeys(): Set<String> {
