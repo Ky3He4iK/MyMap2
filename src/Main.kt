@@ -12,7 +12,7 @@ val help = listOf(
         "del_v <value>" to "delete keys with value <value>",
         "show <key>" to "show value for <key>",
         "find <part>" to "show all keys and values that contains <part>",
-        "find_regex <regex>" to "show all keys and values that match <regex>",
+        "regex <regex>" to "show all keys and values that match <regex>",
         "" to "",
         "<key> = <value>" to "see \"set <key>\"",
         "<key>" to "see \"show <key>\""
@@ -76,6 +76,7 @@ fun main(args: Array<String>) {
         } catch (e: Exception) {
             println("Sorry, but an exception occupied (" + e.message + ")")
             e.printStackTrace()
+            Thread.sleep(100)
         }
     }
 }

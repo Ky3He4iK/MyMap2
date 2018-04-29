@@ -1,3 +1,5 @@
+import java.util.regex.PatternSyntaxException
+
 class Handlers(mMap: NewMap) {
     private val myMap = mMap
 
@@ -35,7 +37,7 @@ class Handlers(mMap: NewMap) {
     }
 
     fun isRegex(command: String): Boolean {
-        return command == "find_regex"
+        return command == "regex"
     }
 
     fun isSet(command: String): Boolean {
@@ -55,7 +57,7 @@ class Handlers(mMap: NewMap) {
     }
 
     fun isWrite(command: String): Boolean {
-        return command == "stop"
+        return command == "write"
     }
 
     // Выполнение комманд
@@ -75,8 +77,10 @@ class Handlers(mMap: NewMap) {
     }
 
     fun onClear() {
-        myMap.clear()
-        println("Cleared!")
+        if (getAssent("All pairs will be deleted. Continue?")) {
+            myMap.clear()
+            println("Cleared!")
+        }
     }
 
     fun onDel(data: String?) {
@@ -86,8 +90,12 @@ class Handlers(mMap: NewMap) {
             mData = readLine()!!
         }
         if (myMap.contains(mData)) {
-            myMap.del(mData)
-            println("Deleted successfully")
+            println("These pair will be deleted:")
+            myMap.printPair(mData)
+            if (getAssent("Are you sure?")) {
+                myMap.del(mData)
+                println("Deleted successfully")
+            }
         } else
             println("I haven't this key!")
     }
@@ -98,13 +106,16 @@ class Handlers(mMap: NewMap) {
             print("Please, enter the value: ")
             mData = readLine()!!
         }
-        if (myMap.containsValue(mData)) {
-            val delKeys = myMap.delValue(mData)
-            println("Deleted successfully with keys:")
-            for (key in delKeys)
-                println("\"${toBoldString(key)}\"")
-        } else
-            println("I haven't key with this value!")
+        val found = myMap.findByValues(mData)
+        if (found.isEmpty())
+            println("I haven't any key with this value!")
+        else {
+            println("These keys will be deleted")
+            for (key in found)
+                println("\"$key\"")
+            if (getAssent("Are you sure?"))
+                myMap.del(found)
+        }
     }
 
     fun onFind(data: String?) {
@@ -152,16 +163,8 @@ class Handlers(mMap: NewMap) {
 
     fun onLoad(data: String?) {
         if (!myMap.isEmpty())
-            while (true) {
-                print("I have a data that will be erased, continue? (y/n)")
-                val input = readLine()!!
-                if (input == "y" || input == "yes")
-                    break
-                else if (input == "n" || input == "no")
-                    return
-                else
-                    print("Please, enter \"yes\" or \"no\"")
-            }
+            if (!getAssent("I have a data that will be erased, continue?"))
+                return
         var mData = data
         if (mData == null) {
             print("Please, enter filename (empty line for \"data.txt\"): ")
@@ -180,12 +183,16 @@ class Handlers(mMap: NewMap) {
             print("Please, enter the regex: ")
             mData = readLine()!!
         }
-        val found = myMap.findRegex(mData.toRegex())
-        if (found.isEmpty())
-            println("I can't found keys or values that matches $mData")
-        else
-            for (foundString in found)
-                println("\"${toBoldString(foundString)}\" : \"${myMap.get(foundString)}\"")
+        try {
+            val found = myMap.findRegex(mData.toRegex())
+            if (found.isEmpty())
+                println("I can't found keys or values that matches $mData")
+            else
+                for (foundString in found)
+                    println("\"${toBoldString(foundString)}\" : \"${myMap.get(foundString)}\"")
+        } catch (e: PatternSyntaxException) {
+            println("Seems like there is an error with your expression: ${e.description}")
+        }
     }
 
     fun onSet(data: String?) {
@@ -209,32 +216,23 @@ class Handlers(mMap: NewMap) {
             mData = readLine()!!
         }
         if (myMap.contains(mData))
-            println("\"${toBoldString(mData)}\" - \"" + myMap.get(mData) + "\"")
+            myMap.printPair(mData)
         else
             println("I haven't  this key!")
     }
 
     fun onStop() {
-        while (true) {
-            print("Seems like I have some data. Write it to disk? (y/n)")
-            val input = readLine()!!
-            if (input == "y" || input == "yes")
-                break
-            else if (input == "n" || input == "no") {
-                println("Goodbye...")
-                return
-            } else
-                print("Please, enter \"yes\" or \"no\"")
+        if (getAssent("Seems like I have some data. Write it to disk?")) {
+            var mData: String? = null
+            if (mData == null) {
+                print("Please, enter filename (empty line for \"data.txt\"): ")
+                mData = readLine()!!
+            }
+            if (mData.isEmpty())
+                myMap.write()
+            else
+                myMap.write(mData)
         }
-        var mData: String? = null
-        if (mData == null) {
-            print("Please, enter filename (empty line for \"data.txt\"): ")
-            mData = readLine()!!
-        }
-        if (mData.isEmpty())
-            myMap.write()
-        else
-            myMap.write(mData)
         //myMap.write()
         println("Goodbye...")
     }
@@ -257,7 +255,10 @@ class Handlers(mMap: NewMap) {
             mData = readLine()!!
         }
 
-        myMap.write(mData)
+        if (mData.isEmpty())
+            myMap.write()
+        else
+            myMap.write(mData)
         println("Written successfully!")
     }
 
@@ -267,5 +268,18 @@ class Handlers(mMap: NewMap) {
             myMap.printPair(input)
         else
             println("I don't know this command or key\n${toBoldString("help")} for list of available details")
+    }
+
+    private fun getAssent(assentMessage: String): Boolean {
+        while (true) {
+            print("$assentMessage (y/n): ")
+            val input = readLine()!!
+            if (input == "y" || input == "yes")
+                return true
+            else if (input == "n" || input == "no") {
+                return false
+            } else
+                println("Please, enter \"yes\" or \"no\"")
+        }
     }
 }

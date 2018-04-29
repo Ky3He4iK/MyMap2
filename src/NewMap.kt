@@ -12,6 +12,7 @@ class NewMap { // Оболочка для map
     fun load(filename: String = "data.txt"): Boolean {
         val file = File(filename)
         if (file.exists()) {
+            clear()
             val inputArray = file.bufferedReader().use { it.readText() }.split("\n")
             for (i in 0 until (inputArray.size - inputArray.size % 2) step 2)
                 set(inputArray[i], inputArray[i + 1])
@@ -27,7 +28,7 @@ class NewMap { // Оболочка для map
                 println("Error creating a new file")
         val bufferedWriter = file.bufferedWriter()
         for (key in getKeys())
-            bufferedWriter.write("$key\n${get(key)}")
+            bufferedWriter.write("$key\n${get(key)}\n")
         bufferedWriter.close()
     }
 
@@ -39,16 +40,20 @@ class NewMap { // Оболочка для map
         myMap.remove(key)
     }
 
-    fun delValue(value: String): ArrayList<String> {
-        val delKeys = ArrayList<String>()
-        val keys = getKeys().toTypedArray()
+    fun del(keys: ArrayList<String>) {
         for (key in keys)
-            if (get(key) == value) {
-                del(key)
-                delKeys.add(key)
-            }
-        return delKeys
+            del(key)
     }
+
+    fun findByValues(value: String): ArrayList<String> {
+        val foundKeys = ArrayList<String>()
+        for (key in getKeys())
+            if (get(key) == value) {
+                foundKeys.add(key)
+            }
+        return foundKeys
+    }
+
 
     fun get(key: String): String? {
         return myMap[key]
@@ -89,7 +94,7 @@ class NewMap { // Оболочка для map
     }
 
     fun printPair(key: String) {
-        print("\"${toBoldString(key)}\" : \"${get(key)}\"")
+        println("\"${toBoldString(key)}\" : \"${get(key)}\"")
     }
 
     fun getKeys(): Set<String> {
