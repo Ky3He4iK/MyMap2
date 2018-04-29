@@ -1,3 +1,11 @@
+/**
+ * Это - обертка над классом Map из стандартной библиотеки для CLI. Прошу сильно не кидать тамками.
+ * Я тоже человек, могу ошибиться и буду блягодарен за найденные ошибки
+ * Скорее всего, в коде мало комментариев. Код вроде как самокомментирующмйся, так как я проблем с понимаем кода не встретил)
+ *
+ * @ky3he4ik. 04/2018
+ */
+
 val help = listOf(
         "help" to "show help message",
         "stop" to "exit program",
@@ -40,6 +48,8 @@ fun main(args: Array<String>) {
             val spacePos = input.indexOf(" ")
             val command: String = (if (spacePos == -1) input else input.substring(0, spacePos)).toLowerCase()
             val data: String? = if (spacePos == -1) null else input.substring(spacePos + 1)
+
+            // TODO: заменить на forEach по массиву, упрятав каждый хендлер в отдельный класс
             if (handlers.isAdd(command))
                 handlers.onAdd(data)
             else if (handlers.isClear(command))

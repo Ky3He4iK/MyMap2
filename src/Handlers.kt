@@ -108,11 +108,11 @@ class Handlers(mMap: NewMap) {
         }
         val found = myMap.findByValues(mData)
         if (found.isEmpty())
-            println("I haven't any key with this value!")
+            println("I haven't any pair with this value!")
         else {
-            println("These keys will be deleted")
+            println("These pairs will be deleted")
             for (key in found)
-                println("\"$key\"")
+                myMap.printPair(key)
             if (getAssent("Are you sure?"))
                 myMap.del(found)
         }
@@ -121,12 +121,12 @@ class Handlers(mMap: NewMap) {
     fun onFind(data: String?) {
         var mData = data
         if (mData == null) {
-            print("Please, enter the part: ")
+            print("Please, enter the part of key or value: ")
             mData = readLine()!!
         }
         val found = myMap.find(mData)
         if (found.isEmpty())
-            println("I can't found keys or values with $mData")
+            println("I can't found pair with $mData")
         else
             for (foundWrite in found) {
                 print("\"")
