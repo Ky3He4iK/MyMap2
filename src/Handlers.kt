@@ -139,10 +139,11 @@ class HandlerList : HandlerBase() {
     }
 
     override fun onMatch(data: String?, myMap: NewMap) {
-        if (!myMap.isEmpty())
+        if (!myMap.isEmpty()) {
+            println("I have ${toBoldString(myMap.size().toString())} pairs:")
             for (key in myMap.getKeys())
                 HandlerShow().onMatch(key, myMap)
-        else
+        } else
             println("I haven't any data yet :(")
     }
 }
@@ -164,7 +165,7 @@ class HandlerLoad : HandlerBase() {
         }
         val res = if (mData.isEmpty()) myMap.load() else myMap.load(mData)
         if (res)
-            println("Loaded successfully!")
+            println("Loaded successfully ${toBoldString(myMap.size().toString())} pairs")
         else
             println("Seems like this file doesn't exists. Operation canceled")
     }

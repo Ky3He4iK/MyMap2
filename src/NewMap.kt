@@ -100,4 +100,8 @@ class NewMap { // Оболочка для map
     fun getKeys(): Set<String> {
         return myMap.keys
     }
+
+    fun size(): Int {
+        return myMap.size
+    }
 }
