@@ -94,7 +94,8 @@ class NewMap { // Оболочка для map
     }
 
     fun printPair(key: String) {
-        println("\"${toBoldString(key)}\" : \"${get(key)}\"")
+        val toOutput = "\"${toBoldString(key)}\" : \"${get(key)}\""
+        println(toOutput)
     }
 
     fun getKeys(): Set<String> {

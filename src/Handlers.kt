@@ -297,7 +297,7 @@ class HandlerDefault : HandlerBase() {
     override fun isMatch(command: String, myMap: NewMap): Boolean = true
 
     override fun onMatch(data: String?, myMap: NewMap) {
-        if (myMap.contains(data!!))
+        if (data != null && myMap.contains(data))
             myMap.printPair(data)
         else
             println("I don't know this command or key\n${toBoldString("help")} for list of available details")

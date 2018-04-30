@@ -76,6 +76,7 @@ fun main(args: Array<String>) {
             println()
         } catch (e: Exception) {
             println("Sorry, but an exception occupied (" + e.message + ")")
+            Thread.sleep(100) // Пауза что бы не смешивался вывод
             e.printStackTrace()
             Thread.sleep(100)
         }
