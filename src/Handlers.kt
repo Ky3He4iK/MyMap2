@@ -1,67 +1,16 @@
 import java.util.regex.PatternSyntaxException
 
-class Handlers(mMap: NewMap) {
-    private val myMap = mMap
+open class HandlerBase {
+    open fun isMatch(command: String, myMap: NewMap): Boolean = false
+    open fun onMatch(data: String?, myMap: NewMap) {}
+}
 
-    // Проверка на соответствие той или иной комманде
-    fun isAdd(command: String): Boolean {
-        return command == "add"
+class HandlerAdd : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "add"
     }
 
-    fun isClear(command: String): Boolean {
-        return command == "clear"
-    }
-
-    fun isDel(command: String): Boolean {
-        return command == "del"
-    }
-
-    fun isDelByVal(command: String): Boolean {
-        return command == "del_v"
-    }
-
-    fun isFind(command: String): Boolean {
-        return command == "find"
-    }
-
-    fun isHelp(command: String): Boolean {
-        return command == "help"
-    }
-
-    fun isList(command: String): Boolean {
-        return command == "list"
-    }
-
-    fun isLoad(command: String): Boolean {
-        return command == "load"
-    }
-
-    fun isRegex(command: String): Boolean {
-        return command == "regex"
-    }
-
-    fun isSet(command: String): Boolean {
-        return command == "set"
-    }
-
-    fun isShow(command: String): Boolean {
-        return command == "show"
-    }
-
-    fun isStop(command: String): Boolean {
-        return command == "stop" || command == "exit"
-    }
-
-    fun isShowShort(input: String): Boolean {
-        return input.contains(" = ") && !myMap.contains(input)
-    }
-
-    fun isWrite(command: String): Boolean {
-        return command == "write"
-    }
-
-    // Выполнение комманд
-    fun onAdd(data: String?) {
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the key: ")
@@ -75,15 +24,27 @@ class Handlers(mMap: NewMap) {
             println("Added successfully")
         }
     }
+}
 
-    fun onClear() {
+class HandlerClear : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "clear"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         if (getAssent("All pairs will be deleted. Continue?")) {
             myMap.clear()
             println("Cleared!")
         }
     }
+}
 
-    fun onDel(data: String?) {
+class HandlerDel : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "del"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the key: ")
@@ -99,8 +60,14 @@ class Handlers(mMap: NewMap) {
         } else
             println("I haven't this key!")
     }
+}
 
-    fun onDelByVal(data: String?) {
+class HandlerDelByVal : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "del_v"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the value: ")
@@ -117,8 +84,14 @@ class Handlers(mMap: NewMap) {
                 myMap.del(found)
         }
     }
+}
 
-    fun onFind(data: String?) {
+class HandlerFind : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "find"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the part of key or value: ")
@@ -144,24 +117,43 @@ class Handlers(mMap: NewMap) {
                 println("\"")
             }
     }
+}
 
-    fun onHelp() {
+class HandlerHelp : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "help"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         for (com in help)
             if (com.first.isEmpty())
                 println()
             else
                 println("${toBoldString(com.first)} - ${com.second}")
     }
+}
 
-    fun onList() {
+class HandlerList : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "list"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         if (!myMap.isEmpty())
             for (key in myMap.getKeys())
-                onShow(key)
+                HandlerShow().onMatch(key, myMap)
         else
             println("I haven't any data yet :(")
     }
+}
 
-    fun onLoad(data: String?) {
+class HandlerLoad : HandlerBase() {
+
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "load"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         if (!myMap.isEmpty())
             if (!getAssent("I have a data that will be erased, continue?"))
                 return
@@ -177,7 +169,14 @@ class Handlers(mMap: NewMap) {
             println("Seems like this file doesn't exists. Operation canceled")
     }
 
-    fun onRegex(data: String?) {
+}
+
+class HandlerRegex : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "regex"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the regex: ")
@@ -194,8 +193,14 @@ class Handlers(mMap: NewMap) {
             println("Seems like there is an error with your expression: ${e.description}")
         }
     }
+}
 
-    fun onSet(data: String?) {
+class HandlerSet : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "set"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the key: ")
@@ -208,8 +213,14 @@ class Handlers(mMap: NewMap) {
         } else
             println("I haven't this key!")
     }
+}
 
-    fun onShow(data: String?) {
+class HandlerShow : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "show"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter the key: ")
@@ -220,8 +231,14 @@ class Handlers(mMap: NewMap) {
         else
             println("I haven't  this key!")
     }
+}
 
-    fun onStop() {
+class HandlerStop : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "stop" || command.toLowerCase() == "stop"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         if (getAssent("Seems like I have some data. Write it to disk?")) {
             var mData: String? = null
             if (mData == null) {
@@ -236,19 +253,31 @@ class Handlers(mMap: NewMap) {
         //myMap.write()
         println("Goodbye...")
     }
+}
 
-    fun onShowShort(input: String) {
-        val sepPlace = input.indexOf(" = ")
-        val key = input.substring(0, sepPlace)
-        val value = input.substring(sepPlace + " = ".length)
+class HandlerShowShort : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.contains(" = ") && !myMap.contains(command)
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
+        val sepPlace = data!!.indexOf(" = ")
+        val key = data.substring(0, sepPlace)
+        val value = data.substring(sepPlace + " = ".length)
         if (myMap.contains(key)) {
             myMap.set(key, value)
             println("set successfully")
         } else
             println("I haven't this key")
     }
+}
 
-    fun onWrite(data: String?) {
+class HandlerWrite : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean {
+        return command.toLowerCase() == "write"
+    }
+
+    override fun onMatch(data: String?, myMap: NewMap) {
         var mData = data
         if (mData == null) {
             print("Please, enter filename (empty line for \"data.txt\"): ")
@@ -261,25 +290,15 @@ class Handlers(mMap: NewMap) {
             myMap.write(mData)
         println("Written successfully!")
     }
+}
 
+class HandlerDefault : HandlerBase() {
+    override fun isMatch(command: String, myMap: NewMap): Boolean = true
 
-    fun default(input: String) {
-        if (myMap.contains(input))
-            myMap.printPair(input)
+    override fun onMatch(data: String?, myMap: NewMap) {
+        if (myMap.contains(data!!))
+            myMap.printPair(data)
         else
             println("I don't know this command or key\n${toBoldString("help")} for list of available details")
-    }
-
-    private fun getAssent(assentMessage: String): Boolean {
-        while (true) {
-            print("$assentMessage (y/n): ")
-            val input = readLine()!!
-            if (input == "y" || input == "yes")
-                return true
-            else if (input == "n" || input == "no") {
-                return false
-            } else
-                println("Please, enter \"yes\" or \"no\"")
-        }
     }
 }

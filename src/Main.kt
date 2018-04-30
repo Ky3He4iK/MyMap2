@@ -32,15 +32,30 @@ fun toBoldString(text: String): String { // Специальная функци 
     val normal = "$esc[0"
     val colorWhite = ";37m" // Различные escape-последовательности для форматирования вывода
     val boldText = "$bold$colorWhite$text"
-    val normalText = "$normal$colorWhite${""}" // Возвращаемся к обычной толщине
+    val normalText = "$normal$colorWhite" // Возвращаемся к обычной толщине
     return boldText + normalText // Для возможности встраивания в print. Вывод становится в 1 строчку в большинстве случаев
 }
 
+fun getAssent(assentMessage: String): Boolean {
+    while (true) {
+        print("$assentMessage (y/n): ")
+        val input = readLine()!!
+        if (input == "y" || input == "yes")
+            return true
+        else if (input == "n" || input == "no") {
+            return false
+        } else
+            println("Please, enter \"yes\" or \"no\"")
+    }
+}
 
 fun main(args: Array<String>) {
     println("Hello!")
-    val handlers = Handlers(NewMap())
-    handlers.onHelp()
+    val myMap = NewMap()
+    val handlers = listOf(HandlerAdd(), HandlerClear(), HandlerDel(), HandlerDelByVal(), HandlerFind(), HandlerHelp(), // 0 - 5
+            HandlerList(), HandlerLoad(), HandlerRegex(), HandlerSet(), HandlerShow(), HandlerStop(), HandlerShowShort(), // 6 - 12
+            HandlerWrite(), HandlerDefault()) // 13 - 14
+    handlers[5].onMatch(null, myMap)
     while (true) {
         print("\nYour command: ")
         val input = readLine()!!
@@ -49,38 +64,14 @@ fun main(args: Array<String>) {
             val command: String = (if (spacePos == -1) input else input.substring(0, spacePos)).toLowerCase()
             val data: String? = if (spacePos == -1) null else input.substring(spacePos + 1)
 
-            // TODO: заменить на forEach по массиву, упрятав каждый хендлер в отдельный класс
-            if (handlers.isAdd(command))
-                handlers.onAdd(data)
-            else if (handlers.isClear(command))
-                handlers.onClear()
-            else if (handlers.isDel(command))
-                handlers.onDel(data)
-            else if (handlers.isDelByVal(command))
-                handlers.onDelByVal(data)
-            else if (handlers.isFind(command))
-                handlers.onFind(data)
-            else if (handlers.isHelp(command))
-                handlers.onHelp()
-            else if (handlers.isList(command))
-                handlers.onList()
-            else if (handlers.isLoad(command))
-                handlers.onLoad(data)
-            else if (handlers.isRegex(command))
-                handlers.onRegex(data)
-            else if (handlers.isSet(command))
-                handlers.onSet(data)
-            else if (handlers.isShow(command))
-                handlers.onShow(data)
-            else if (handlers.isStop(command)) {
-                handlers.onStop()
+            for (handler in handlers)
+                if (handler.isMatch(command, myMap)) {
+                    handler.onMatch(data, myMap)
+                    break
+                }
+
+            if (handlers[11].isMatch(command, myMap))
                 break
-            } else if (handlers.isWrite(command))
-                handlers.onWrite(data)
-            else if (handlers.isShowShort(input))
-                handlers.onShowShort(input)
-            else
-                handlers.default(input)
         } catch (e: InterruptedException) {
             println()
         } catch (e: Exception) {
